@@ -65,4 +65,36 @@ function afficherLesFiltres(travaux) {
     })
 }
 
+function gererModeEdition() {
+    const token = localStorage.getItem("token")
+    if (!token) return
+
+    // Cacher les filtres
+    document.querySelector(".filters").style.display = "none"
+
+    // Login devient Logout
+    const lienLogin = document.querySelector("nav li a")
+    lienLogin.textContent = "logout"
+    lienLogin.addEventListener("click", (e) => {
+        e.preventDefault()
+        localStorage.removeItem("token")
+        window.location.reload()
+    })
+
+    // Bandeau mode édition
+    const bandeau = document.createElement("div")
+    bandeau.id = "bandeau-edition"
+    bandeau.innerHTML = `
+        <p><img src="./assets/icons/edit.png" alt="modifier"> Mode édition</p>
+    `
+    document.body.prepend(bandeau)
+
+    // Bouton modifier
+    const boutonModifier = document.createElement("button")
+    boutonModifier.id = "btn-modifier"
+    boutonModifier.innerHTML = `<p><img src="./assets/icons/editb.png" alt="modifier"> modifier</p>`
+    document.querySelector("#portfolio h2").after(boutonModifier)
+}
+
 recupererLesTravaux()
+gererModeEdition()
