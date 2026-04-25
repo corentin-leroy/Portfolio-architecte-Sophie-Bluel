@@ -3,6 +3,7 @@ async function recupererLesTravaux() {
     const travaux = await reponse.json()
     afficherLesTravaux(travaux)
     afficherLesFiltres(travaux)
+    afficherGalerieModale(travaux)
 }
 
 function afficherLesTravaux(travaux) {
@@ -96,5 +97,66 @@ function gererModeEdition() {
     document.querySelector("#portfolio h2").after(boutonModifier)
 }
 
+
+function gererModale() {
+    const overlay = document.querySelector("#overlay")
+    const btnFermer = document.querySelector("#btn-fermer-modale")
+    const btnAjoutPhoto = document.querySelector("#btn-ajout-photo")
+    const btnRetour = document.querySelector("#btn-retour")
+    const vueGalerie = document.querySelector("#vue-galerie")
+    const vueFormulaire = document.querySelector("#vue-formulaire")
+    const btnModifier = document.querySelector("#btn-modifier")
+
+    // Ouvrir la modale au clic sur "modifier"
+    btnModifier.addEventListener("click", () => {
+        overlay.classList.remove("hidden")
+    })
+
+    // Fermer au clic sur la croix
+    btnFermer.addEventListener("click", () => {
+        overlay.classList.add("hidden")
+        vueFormulaire.classList.add("hidden")
+        vueGalerie.classList.remove("hidden")
+    })
+
+    // Fermer au clic sur l'overlay (en dehors de la modale)
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            overlay.classList.add("hidden")
+            vueFormulaire.classList.add("hidden")
+            vueGalerie.classList.remove("hidden")
+        }
+    })
+
+    // Passer à la vue formulaire
+    btnAjoutPhoto.addEventListener("click", () => {
+        vueGalerie.classList.add("hidden")
+        vueFormulaire.classList.remove("hidden")
+    })
+
+    // Retour à la vue galerie
+    btnRetour.addEventListener("click", () => {
+        vueFormulaire.classList.add("hidden")
+        vueGalerie.classList.remove("hidden")
+    })
+}
+
+function afficherGalerieModale(travaux) {
+    const galerieModale = document.querySelector("#galerie-modale")
+    galerieModale.innerHTML = ""
+
+    travaux.forEach(travail => {
+        const figure = document.createElement("figure")
+        const image = document.createElement("img")
+
+        image.src = travail.imageUrl
+        image.alt = travail.title
+
+        figure.appendChild(image)
+        galerieModale.appendChild(figure)
+    })
+}
+
 recupererLesTravaux()
 gererModeEdition()
+gererModale()

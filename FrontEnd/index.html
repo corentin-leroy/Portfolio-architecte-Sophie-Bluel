@@ -65,6 +65,42 @@
 		</ul>
 	</nav>
 </footer>
+<div id="overlay" class="hidden">
+    <div id="modale">
+        <button id="btn-fermer-modale"><img src="./assets/icons/xmark.png"></button>
+        <!-- Vue 1 : Galerie -->
+        <div id="vue-galerie">
+            <h3>Galerie photo</h3>
+            <div id="galerie-modale"></div>
+            <hr>
+            <button id="btn-ajout-photo">Ajouter une photo</button>
+        </div>
+
+        <!-- Vue 2 : Formulaire -->
+        <div id="vue-formulaire" class="hidden">
+            <button id="btn-retour"><img src="./assets/icons/arrow-left.png"></button>
+            <h3>Ajout photo</h3>
+            <form id="form-ajout">
+                <div id="zone-upload">
+					<img src="./assets/icons/image-placeholder.svg" alt="" id="preview-image">
+					<label for="input-image">+ Ajouter photo</label>
+					<p>jpg, png : 4mo max</p>
+					<input type="file" id="input-image" accept="image/*">
+				</div>
+				<div id="form-titre">
+					<label for="titre-projet">Titre</label>
+					<input type="text" id="titre-projet">
+				</div>
+				<div id="form-cat">
+					<label for="categorie-projet">Catégorie</label>
+					<select id="categorie-projet"></select>
+				</div>
+                <hr>
+                <button type="submit">Valider</button>
+            </form>
+        </div>
+    </div>
+</div>
 <script src="./assets/script.js"></script>
 </body>
 </html>
