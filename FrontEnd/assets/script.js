@@ -147,12 +147,37 @@ function afficherGalerieModale(travaux) {
 
     travaux.forEach(travail => {
         const figure = document.createElement("figure")
-        const image = document.createElement("img")
+        figure.style.position = "relative"
 
+        const image = document.createElement("img")
         image.src = travail.imageUrl
         image.alt = travail.title
 
+        const btnSupprimer = document.createElement("button")
+        btnSupprimer.classList.add("btn-supprimer")
+        btnSupprimer.innerHTML = `<img src="./assets/icons/delete.svg" alt="supprimer">`
+
+        btnSupprimer.addEventListener("click", async () => {
+            const token = localStorage.getItem("token")
+
+            const reponse = await fetch(`http://localhost:5678/api/works/${travail.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+
+            if (reponse.ok) {
+                figure.remove()
+                afficherLesTravaux(await fetch("http://localhost:5678/api/works").then(r => r.json()))
+            } else if (reponse.status === 401) {
+                localStorage.removeItem("token")
+                window.location.reload()
+            }
+        })
+
         figure.appendChild(image)
+        figure.appendChild(btnSupprimer)
         galerieModale.appendChild(figure)
     })
 }
