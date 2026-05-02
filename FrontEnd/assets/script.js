@@ -182,6 +182,113 @@ function afficherGalerieModale(travaux) {
     })
 }
 
+async function remplirCategories() {
+    const reponse = await fetch("http://localhost:5678/api/categories")
+    const categories = await reponse.json()
+    const select = document.querySelector("#categorie-projet")
+
+    categories.forEach(categorie => {
+        const option = document.createElement("option")
+        option.value = categorie.id
+        option.textContent = categorie.name
+        select.appendChild(option)
+    })
+}
+
+function gererFormulaireAjout() {
+    const formulaire = document.querySelector("#form-ajout")
+    const inputImage = document.querySelector("#input-image")
+    const previewImage = document.querySelector("#preview-image")
+
+    inputImage.addEventListener("change", () => {
+        const fichier = inputImage.files[0]
+        if (fichier) {
+            previewImage.src = URL.createObjectURL(fichier)
+        }
+    })
+    formulaire.addEventListener("submit", async (event) => {
+        event.preventDefault()
+
+        const token = localStorage.getItem("token")
+        const titre = document.querySelector("#titre-projet").value
+        const categorie = document.querySelector("#categorie-projet").value
+        const image = document.querySelector("#input-image").files[0]
+
+        // Vérification que tous les champs sont remplis
+        if (!titre || !categorie || !image) {
+            alert("Veuillez remplir tous les champs")
+            return
+        }
+
+        // Construction du FormData
+        const formData = new FormData()
+        formData.append("title", titre)
+        formData.append("category", categorie)
+        formData.append("image", image)
+
+        const reponse = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
+        })
+
+        if (reponse.ok) {
+        const nouveauTravail = await reponse.json()
+
+        // Ajouter dans la galerie principale
+        const galerie = document.querySelector(".gallery")
+        const figure = document.createElement("figure")
+        const image = document.createElement("img")
+        const legende = document.createElement("figcaption")
+
+        image.src = nouveauTravail.imageUrl
+        image.alt = nouveauTravail.title
+        legende.textContent = nouveauTravail.title
+
+        figure.appendChild(image)
+        figure.appendChild(legende)
+        galerie.appendChild(figure)
+
+        // Ajouter dans la galerie de la modale
+        const galerieModale = document.querySelector("#galerie-modale")
+        const figureModale = document.createElement("figure")
+        figureModale.style.position = "relative"
+
+        const imageModale = document.createElement("img")
+        imageModale.src = nouveauTravail.imageUrl
+        imageModale.alt = nouveauTravail.title
+
+        const btnSupprimer = document.createElement("button")
+        btnSupprimer.classList.add("btn-supprimer")
+        btnSupprimer.textContent = "🗑"
+
+        btnSupprimer.addEventListener("click", async () => {
+            const token = localStorage.getItem("token")
+            const reponse = await fetch(`http://localhost:5678/api/works/${nouveauTravail.id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            })
+            if (reponse.ok) {
+                figureModale.remove()
+                afficherLesTravaux(await fetch("http://localhost:5678/api/works").then(r => r.json()))
+            }
+        })
+
+        figureModale.appendChild(imageModale)
+        figureModale.appendChild(btnSupprimer)
+        galerieModale.appendChild(figureModale)
+
+        // Réinitialiser le formulaire
+        formulaire.reset()
+         previewImage.src = "./assets/icons/image-placeholder.svg"
+        } 
+    })     
+}          
+
 recupererLesTravaux()
 gererModeEdition()
 gererModale()
+remplirCategories()
+gererFormulaireAjout()
