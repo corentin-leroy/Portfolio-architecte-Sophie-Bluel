@@ -25,6 +25,18 @@ function afficherLesTravaux(travaux) {
     })
 }
 
+function reinitialiserFormulaire() {
+    const previewImage = document.querySelector("#preview-image")
+    const formulaire = document.querySelector("#form-ajout")
+    
+    formulaire.reset()
+    previewImage.src = "./assets/icons/image-placeholder.svg"
+    previewImage.style.width = "80px"
+    previewImage.style.height = "80px"
+    document.querySelector("#zone-upload label").style.display = "block"
+    document.querySelector("#zone-upload p").style.display = "block"
+}
+
 function afficherLesFiltres(travaux) {
     const conteneurFiltres = document.querySelector(".filters")
 
@@ -117,6 +129,7 @@ function gererModale() {
         overlay.classList.add("hidden")
         vueFormulaire.classList.add("hidden")
         vueGalerie.classList.remove("hidden")
+        reinitialiserFormulaire()
     })
 
     // Fermer au clic sur l'overlay (en dehors de la modale)
@@ -125,6 +138,7 @@ function gererModale() {
             overlay.classList.add("hidden")
             vueFormulaire.classList.add("hidden")
             vueGalerie.classList.remove("hidden")
+            reinitialiserFormulaire()
         }
     })
 
@@ -138,6 +152,7 @@ function gererModale() {
     btnRetour.addEventListener("click", () => {
         vueFormulaire.classList.add("hidden")
         vueGalerie.classList.remove("hidden")
+        reinitialiserFormulaire()
     })
 }
 
@@ -204,8 +219,16 @@ function gererFormulaireAjout() {
         const fichier = inputImage.files[0]
         if (fichier) {
             previewImage.src = URL.createObjectURL(fichier)
+            previewImage.style.width = "130px"
+            previewImage.style.height = "100%"
+            previewImage.style.objectFit = "cover"
+            
+            // Cacher le bouton et le texte
+            document.querySelector("#zone-upload label").style.display = "none"
+            document.querySelector("#zone-upload p").style.display = "none"
         }
     })
+
     formulaire.addEventListener("submit", async (event) => {
         event.preventDefault()
 
@@ -262,7 +285,7 @@ function gererFormulaireAjout() {
 
         const btnSupprimer = document.createElement("button")
         btnSupprimer.classList.add("btn-supprimer")
-        btnSupprimer.textContent = "🗑"
+        btnSupprimer.innerHTML = `<img src="./assets/icons/delete.svg" alt="supprimer">`
 
         btnSupprimer.addEventListener("click", async () => {
             const token = localStorage.getItem("token")
@@ -282,8 +305,17 @@ function gererFormulaireAjout() {
 
         // Réinitialiser le formulaire
         formulaire.reset()
-         previewImage.src = "./assets/icons/image-placeholder.svg"
-        } 
+        previewImage.src = "./assets/icons/image-placeholder.svg"
+        previewImage.style.width = "80px"
+        previewImage.style.height = "80px"
+        document.querySelector("#zone-upload label").style.display = "block"
+        document.querySelector("#zone-upload p").style.display = "block"
+        }
+        
+        // Fermer la modale et revenir à la vue galerie
+        document.querySelector("#overlay").classList.add("hidden")
+        document.querySelector("#vue-formulaire").classList.add("hidden")
+        document.querySelector("#vue-galerie").classList.remove("hidden")
     })     
 }          
 
